@@ -1,13 +1,26 @@
-import axios from 'axios'
+import apiClient from './apiClient'
 
-const BASE_URL = 'http://127.0.0.1:8000/api/v1/admin/recursos'
-
-export async function getRecursos(pagina = 1) {
-  const res = await axios.get(`${BASE_URL}?per_page=50&page=${pagina}`)
-  return res.data?.data?.data || res.data?.data || []
+export async function getRecursos() {
+  const respuesta = await apiClient.get('/recursos', {
+    params: {
+      per_page: 50
+    }
+  })
+  if (respuesta.status === 200 && respuesta.data.success) {
+    return respuesta.data.data.data || []
+  }
+  throw new Error('Respuesta inesperada del servidor')
 }
 
 export async function getRecursoById(id) {
-  const res = await axios.get(`${BASE_URL}/${id}`)
-  return res.data?.data || res.data
+  const respuesta = await apiClient.get(`/recursos/${id}`)
+  if (respuesta.status === 200 && respuesta.data.success) {
+    return respuesta.data.data
+  }
+  throw new Error('No se encontro el recurso solicitado')
+}
+
+export default {
+  getRecursos,
+  getRecursoById
 }

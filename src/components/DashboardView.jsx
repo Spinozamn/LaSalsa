@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getRecursos, getRecursoById } from '../services/innovacionService'
+import { getUsuarioActual, logout } from '../services/authService'
 import RecursoCard from './RecursoCard'
 import RecursoDetailModal from './RecursoDetailModal'
 
 export default function DashboardView() {
+  const navigate = useNavigate()
+  const [usuario] = useState(() => getUsuarioActual())
   const [recursos, setRecursos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
@@ -39,10 +43,25 @@ export default function DashboardView() {
     }
   }, [])
 
+  async function handleLogout() {
+    await logout()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <div className="dashboard-contenedor">
       <header className="navbar-admin">
         <span className="navbar-titulo-app">LaSalsa</span>
+        <div className="navbar-usuario-zona">
+          <span className="usuario-nombre">{usuario?.email || 'admin@thesauce.test'}</span>
+          <button
+            type="button"
+            className="btn-logout"
+            onClick={handleLogout}
+          >
+            Salir
+          </button>
+        </div>
       </header>
 
       <main className="dashboard-cuerpo">
